@@ -93,7 +93,7 @@ window.onload = function () {
   * keyCode 39: touche flèche droite
   * keyCode 40: touche flèche bas
   */
-  window.document.onkeypress = function (event) {
+  window.document.onkeydown = function (event) {
     var requiredKeys = [37, 38, 39, 40];
     if (requiredKeys.indexOf(event.keyCode) !== -1) {
       event.preventDefault();

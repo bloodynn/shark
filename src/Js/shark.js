@@ -93,76 +93,20 @@ window.onload = function () {
   * keyCode 39: touche flèche droite
   * keyCode 40: touche flèche bas
   */
-  window.document.onkeydown = function (event) {
+  window.document.onkeypress = function (event) {
     var requiredKeys = [37, 38, 39, 40];
     if (requiredKeys.indexOf(event.keyCode) !== -1) {
       event.preventDefault();
       keyCode = event.keyCode;
     }
-    /*
-    switch (keyCode) {
-      case 37:  
-          keysDown.left = true;
-        break;
-      case 38:
-          keysDown.up = true;
-        break;
-      case 39:
-          keysDown.right = true;
-        break;
-      case 40:
-          keysDown.down = true;
-        break;
-      default:
-        event.preventDefault();
-        break
-    };
-    */
     const toto =  $.ajax({
       method: "POST",
       url: "http://127.0.0.1:3000/session/inputs",
       data: { "input" : keyCode },
     }).done(function(){
-      //console.log("post reussi")
     }).fail(function( jqXHR, textStatus ) {
-      //console.log( "Request failed: " + jqXHR);
+      console.log( "Request failed: " + jqXHR);
     })
-    .always(function() {
-      //console.log( "complete" );
-    });
-  };
-
-  window.document.onkeyup = function (event) {
-    // var keyCode = event.keyCode;
-    keyCode = null
-    /*
-    switch (keyCode) {
-      case 37:
-          keysDown.left = false;
-        break;
-      case 38:
-          keysDown.up = false;
-        break;
-      case 39:
-          keysDown.right = false;
-        break;
-      case 40:
-          keysDown.down = false;
-        break;
-    };
-    */
-   const toto =  $.ajax({
-    method: "POST",
-    url: "http://127.0.0.1:3000/session/inputs",
-    data: { "input" : keyCode },
-  }).done(function(){
-    //console.log("post reussi")
-  }).fail(function( jqXHR, textStatus ) {
-    //console.log( "Request failed: " + jqXHR);
-  })
-  .always(function() {
-    //console.log( "complete" );
-  });
   };
 
 
@@ -229,12 +173,11 @@ window.onload = function () {
           method: "get",
           url: "http://127.0.0.1:3000/session/inputs",
         }).done(function(result){
-          // console.log(result)
+         
           this.serverResponse = result
         }).fail(function( jqXHR, textStatus ) {
-         // console.log( "Request failed: " + jqXHR);
+         console.log( "Request failed: " + jqXHR);
         })
-        // var serverResponse={input : 39}
         console.log("response:",serverResponse.input)
         console.log("debut");
         if (serverResponse.input === "37" && !collisions.left) {
@@ -262,26 +205,6 @@ window.onload = function () {
     }
 
     this.renderShark = function () {
-      /*
-        if (keyLeft && !collisions.left) {
-          this.sy = 150;
-          this.dx -= moveSpeedX;
-        }
-  
-        if (keysDown.up && !collisions.up) {
-          this.dy -= moveSpeedY;
-        }
-  
-        if (keysDown.right  && !collisions.right) {
-          this.sy = 0;
-          this.dx += moveSpeedX;
-        }
-  
-        if (keysDown.down  && !collisions.down) {
-          this.dy += moveSpeedY;
-        }
-      */
-        // var serverResponse = {input: 0}
       this.context.drawImage(
         this.image,
         (this.currentFrame * this.width),

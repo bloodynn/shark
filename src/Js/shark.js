@@ -1,5 +1,6 @@
 'use strict'
 
+
 window.onload = function () {
  
   /* Variables
@@ -58,7 +59,9 @@ window.onload = function () {
     right: false,
     down: false,
   };
-
+  
+  var inputList=[];
+  var keyCode;
 
   /** Variables de calcul
   * makeItRain: le setInterval servant à générer les poissons
@@ -91,61 +94,75 @@ window.onload = function () {
   * keyCode 40: touche flèche bas
   */
   window.document.onkeydown = function (event) {
-    var keyCode = event.keyCode;
     var requiredKeys = [37, 38, 39, 40];
-    if (requiredKeys.indexOf(keyCode) !== -1) {
+    if (requiredKeys.indexOf(event.keyCode) !== -1) {
       event.preventDefault();
+      keyCode = event.keyCode;
     }
-
+    /*
     switch (keyCode) {
-      case 37:
-        if (!keysDown.left) {
+      case 37:  
           keysDown.left = true;
-        };
         break;
       case 38:
-        if (!keysDown.up) {
           keysDown.up = true;
-        };
         break;
       case 39:
-        if (!keysDown.right) {
           keysDown.right = true;
-        };
         break;
       case 40:
-        if (!keysDown.down) {
           keysDown.down = true;
-        };
         break;
+      default:
+        event.preventDefault();
+        break
     };
+    */
+    const toto =  $.ajax({
+      method: "POST",
+      url: "http://127.0.0.1:3000/session/inputs",
+      data: { "input" : keyCode },
+    }).done(function(){
+      //console.log("post reussi")
+    }).fail(function( jqXHR, textStatus ) {
+      //console.log( "Request failed: " + jqXHR);
+    })
+    .always(function() {
+      //console.log( "complete" );
+    });
   };
 
   window.document.onkeyup = function (event) {
-    var keyCode = event.keyCode;
-
+    // var keyCode = event.keyCode;
+    keyCode = null
+    /*
     switch (keyCode) {
       case 37:
-        if (keysDown.left) {
           keysDown.left = false;
-        };
         break;
       case 38:
-        if (keysDown.up) {
           keysDown.up = false;
-        };
         break;
       case 39:
-        if (keysDown.right) {
           keysDown.right = false;
-        };
         break;
       case 40:
-        if (keysDown.down) {
           keysDown.down = false;
-        };
         break;
     };
+    */
+   const toto =  $.ajax({
+    method: "POST",
+    url: "http://127.0.0.1:3000/session/inputs",
+    data: { "input" : keyCode },
+  }).done(function(){
+    //console.log("post reussi")
+  }).fail(function( jqXHR, textStatus ) {
+    //console.log( "Request failed: " + jqXHR);
+  })
+  .always(function() {
+    //console.log( "complete" );
+  });
   };
 
 
@@ -207,35 +224,74 @@ window.onload = function () {
       );
     };
 
+    this.serverInputs = async function (){
+      var serverResponse = await $.ajax({
+          method: "get",
+          url: "http://127.0.0.1:3000/session/inputs",
+        }).done(function(result){
+          // console.log(result)
+          this.serverResponse = result
+        }).fail(function( jqXHR, textStatus ) {
+         // console.log( "Request failed: " + jqXHR);
+        })
+        // var serverResponse={input : 39}
+        console.log("response:",serverResponse.input)
+        console.log("debut");
+        if (serverResponse.input === "37" && !collisions.left) {
+          console.log("changes");
+          this.sy = 150;
+          this.dx -= moveSpeedX;
+        }
+  
+        if (serverResponse.input === "38" && !collisions.up) {
+          console.log("changes");
+          this.dy -= moveSpeedY;
+        }
+  
+        if (serverResponse.input === "39" && !collisions.right ) {
+          console.log("changes");
+          this.sy = 0;
+          this.dx += moveSpeedX;
+        }
+  
+        if (serverResponse.input === "40" && !collisions.down) {
+          console.log("changes");
+          this.dy += moveSpeedY;
+        }
+        console.log("fin");
+    }
+
     this.renderShark = function () {
-      if (keysDown.left && !collisions.left) {
-        this.sy = 150;
-        this.dx -= moveSpeedX;
-      }
-
-      if (keysDown.up && !collisions.up) {
-        this.dy -= moveSpeedY;
-      }
-
-      if (keysDown.right && !collisions.right) {
-        this.sy = 0;
-        this.dx += moveSpeedX;
-      }
-
-      if (keysDown.down && !collisions.down) {
-        this.dy += moveSpeedY;
-      }
-
+      /*
+        if (keyLeft && !collisions.left) {
+          this.sy = 150;
+          this.dx -= moveSpeedX;
+        }
+  
+        if (keysDown.up && !collisions.up) {
+          this.dy -= moveSpeedY;
+        }
+  
+        if (keysDown.right  && !collisions.right) {
+          this.sy = 0;
+          this.dx += moveSpeedX;
+        }
+  
+        if (keysDown.down  && !collisions.down) {
+          this.dy += moveSpeedY;
+        }
+      */
+        // var serverResponse = {input: 0}
       this.context.drawImage(
         this.image,
-  			(this.currentFrame * this.width),
-  			this.sy,
-  			this.width,
-  			this.height,
-  			this.dx,
-  			this.dy,
-  			this.width,
-  			this.height
+        (this.currentFrame * this.width),
+        this.sy,
+        this.width,
+        this.height,
+        this.dx,
+        this.dy,
+        this.width,
+        this.height
       );
     };
 
@@ -415,6 +471,7 @@ window.onload = function () {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
+    shark.serverInputs();
     shark.renderShark();
     shark.updateShark();
     checkCollisions();

@@ -59,9 +59,11 @@ window.onload = function () {
     right: false,
     down: false,
   };
-  
-  var inputList=[];
-  var keyCode;
+  /* constantes pour les directions coté serveur */
+  var LEFT = "37"
+  var UP = "38"
+  var RIGHT = "39"
+  var DOWN = "40"
 
   /** Variables de calcul
   * makeItRain: le setInterval servant à générer les poissons
@@ -93,16 +95,17 @@ window.onload = function () {
   * keyCode 39: touche flèche droite
   * keyCode 40: touche flèche bas
   */
+  
+  /*Pour faire au plus simple on récupère purement le résultat*/
   window.document.onkeydown = function (event) {
     var requiredKeys = [37, 38, 39, 40];
     if (requiredKeys.indexOf(event.keyCode) !== -1) {
       event.preventDefault();
-      keyCode = event.keyCode;
     }
-    const toto =  $.ajax({
+    $.ajax({
       method: "POST",
       url: "http://127.0.0.1:3000/session/inputs",
-      data: { "input" : keyCode },
+      data: { "input" : event.keyCode },
     }).done(function(){
     }).fail(function( jqXHR, textStatus ) {
       console.log( "Request failed: " + jqXHR);
@@ -168,6 +171,11 @@ window.onload = function () {
       );
     };
 
+    /*
+    * Méthode permettant la récupération de la direction via le serveur
+    * il est recommandé de séparer les actions et donc d'avoir 
+    * 
+    */
     this.serverInputs = async function (){
       var serverResponse = await $.ajax({
           method: "get",
@@ -180,30 +188,31 @@ window.onload = function () {
         })
         console.log("response:",serverResponse.input)
         console.log("debut");
-        if (serverResponse.input === "37" && !collisions.left) {
+        if (serverResponse.input === LEFT && !collisions.left) {
           console.log("changes");
           this.sy = 150;
           this.dx -= moveSpeedX;
         }
   
-        if (serverResponse.input === "38" && !collisions.up) {
+        if (serverResponse.input === UP && !collisions.up) {
           console.log("changes");
           this.dy -= moveSpeedY;
         }
   
-        if (serverResponse.input === "39" && !collisions.right ) {
+        if (serverResponse.input === RIGHT && !collisions.right ) {
           console.log("changes");
           this.sy = 0;
           this.dx += moveSpeedX;
         }
   
-        if (serverResponse.input === "40" && !collisions.down) {
+        if (serverResponse.input === DOWN && !collisions.down) {
           console.log("changes");
           this.dy += moveSpeedY;
         }
         console.log("fin");
     }
 
+    /* cette méthode ne concernen maintenant que l'affichage du requin*/
     this.renderShark = function () {
       this.context.drawImage(
         this.image,
@@ -394,6 +403,7 @@ window.onload = function () {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
+    /*on récupère les données avant d'afficher le requin*/
     shark.serverInputs();
     shark.renderShark();
     shark.updateShark();

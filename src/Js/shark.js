@@ -65,6 +65,8 @@ window.onload = function () {
   var RIGHT = "39"
   var DOWN = "40"
 
+  var keyCode = null;
+
   /** Variables de calcul
   * makeItRain: le setInterval servant à générer les poissons
   * fishes: Les poissons générés
@@ -102,10 +104,31 @@ window.onload = function () {
     if (requiredKeys.indexOf(event.keyCode) !== -1) {
       event.preventDefault();
     }
+    
+    if (keyCode !== event.keyCode){
+      keyCode = event.keyCode;
+      $.ajax({
+        method: "POST",
+        url: "http://127.0.0.1:3000/session/inputs",
+        data: { "input" : keyCode },
+      }).done(function(){
+      }).fail(function( jqXHR, textStatus ) {
+        console.log( "Request failed: " + jqXHR);
+      })
+    }
+    
+  };
+
+  window.document.onkeyup = function (event) {
+    var requiredKeys = [37, 38, 39, 40];
+    if (requiredKeys.indexOf(event.keyCode) !== -1) {
+      event.preventDefault();
+    }
+    keyCode = null;
     $.ajax({
       method: "POST",
-      url: "http://127.0.0.1:3000/session/inputs",
-      data: { "input" : event.keyCode },
+      url: "http://88.187.112.10:3000/session/inputs",
+      data: { "input" :null },
     }).done(function(){
     }).fail(function( jqXHR, textStatus ) {
       console.log( "Request failed: " + jqXHR);
@@ -176,10 +199,10 @@ window.onload = function () {
     * il est recommandé de séparer les actions et donc d'avoir 
     * 
     */
-    this.serverInputs = async function (){
-      var serverResponse = await $.ajax({
+    this.serverInputs = async function (){  
+        var serverResponse = await $.ajax({
           method: "get",
-          url: "http://127.0.0.1:3000/session/inputs",
+          url: "http://88.187.112.10:3000/session/inputs",
         }).done(function(result){
          
           this.serverResponse = result

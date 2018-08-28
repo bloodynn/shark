@@ -1,8 +1,9 @@
 'use strict'
 
 
-window.onload = function () {
+window.onload = function() {
  
+  var shark =[]
   /* Variables
   */
 
@@ -211,27 +212,31 @@ window.onload = function () {
         })
         console.log("response:",serverResponse.input)
         console.log("debut");
-        if (serverResponse.input === LEFT && !collisions.left) {
-          console.log("changes");
-          this.sy = 150;
-          this.dx -= moveSpeedX;
+        
+        for(let i=0; i<input.length;i++){
+          if (serverResponse.input === LEFT && !shark[i].collisions.left) {
+            console.log("changes");
+            shark[i].sy = 150;
+            shark[i].dx -= moveSpeedX;
+          }
+    
+          if (serverResponse.input === UP && !collisions.up) {
+            console.log("changes");
+            shark[i].dy -= moveSpeedY;
+          }
+    
+          if (serverResponse.input === RIGHT && !collisions.right ) {
+            console.log("changes");
+            shark[i].sy = 0;
+            shark[i].dx += moveSpeedX;
+          }
+    
+          if (serverResponse.input === DOWN && !collisions.down) {
+            console.log("changes");
+            shark[i].dy += moveSpeedY;
+          }
         }
-  
-        if (serverResponse.input === UP && !collisions.up) {
-          console.log("changes");
-          this.dy -= moveSpeedY;
-        }
-  
-        if (serverResponse.input === RIGHT && !collisions.right ) {
-          console.log("changes");
-          this.sy = 0;
-          this.dx += moveSpeedX;
-        }
-  
-        if (serverResponse.input === DOWN && !collisions.down) {
-          console.log("changes");
-          this.dy += moveSpeedY;
-        }
+        
         console.log("fin");
     }
 
@@ -335,7 +340,7 @@ window.onload = function () {
     dy: 0
   });
 
-  var shark = new Sprite({
+  var shark1 = new Sprite({
     context: context,
     image: sharkSprite,
     sy: 0,
@@ -345,7 +350,26 @@ window.onload = function () {
     dy: 500,
     frames: 8,
     ticksPerFrame: 10
+  });
+
+  shark.push(shark1);
+
+  var shark2 = new Sprite({
+    context: context,
+    image: sharkSprite,
+    sy: 0,
+    width: 237, 
+    height: 150,
+    dx: 800,
+    dy: 500,
+    frames: 8,
+    ticksPerFrame: 10
+
   })
+
+  shark.push(shark2);
+
+
 
   makeItRain = setInterval(function () {
     var fish = new Sprite({
@@ -369,31 +393,31 @@ window.onload = function () {
   * Collisions
   */
   var checkCollisions = function () {
-    collisions = {
+    this.collisions = {
       right: false,
       left: false
     };
     /* Collision bord gauche du canvas */
-    if (shark.dx <= 10) {
-      collisions.left = true;
+    if (this.dx <= 10) {
+      this.collisions.left = true;
       
     };
 
     /* Collision surface de l'eau */
-    if (shark.dy <= 245) {
-      collisions.up = true;
+    if (this.dy <= 245) {
+      this.collisions.up = true;
       
     };
 
     /* Collision bord droite du canvas */
-    if (shark.dx >= canvas.width - 240) {
-      collisions.right = true;
+    if (this.dx >= canvas.width - 240) {
+      this.collisions.right = true;
    
     };
 
     /* Collision bord droite du canvas */
-    if (shark.dy >= canvas.height - 150) {
-      collisions.down = true;
+    if (this.dy >= canvas.height - 150) {
+      this.collisions.down = true;
       
     };
 
@@ -401,10 +425,10 @@ window.onload = function () {
     for (var i = 0; i < fishes.length; i++) {
       var fish = fishes[i];
       if (
-        shark.dy <= fish.dy + 20 &&
-        shark.dx <= fish.dx + 67 &&
-        shark.dx + 237 >= fish.dx &&
-        shark.dy + 120 >= fish.dy
+        this.dy <= fish.dy + 20 &&
+        this.dx <= fish.dx + 67 &&
+        this.dx + 237 >= fish.dx &&
+        this.dy + 120 >= fish.dy
       ) {
         fishes.splice(i, 1);
         score += 1;
@@ -426,11 +450,16 @@ window.onload = function () {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
-    /*on récupère les données avant d'afficher le requin*/
-    shark.serverInputs();
-    shark.renderShark();
-    shark.updateShark();
-    checkCollisions();
+    this.serverInputs();
+    /*on récupère les données avant d'afficher les requins*/
+    for(let i = 0; i<shark.length; i++){
+      shark[i].renderShark();
+      shark[i].updateShark();
+      shark[i].checkCollisions();
+    }
+  
+
+
     for (var i = 0; i < fishes.length; i++) {
       var fish = fishes[i];
       fish.renderFishes();

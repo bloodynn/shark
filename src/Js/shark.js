@@ -202,51 +202,7 @@ window.onload = function() {
     };
 
     /*
-    * Méthode permettant la récupération de la direction via le serveur
-    * il est recommandé de séparer les actions et donc d'avoir 
-    * 
-    */
-    this.serverInputs = async function (){  
-        var serverResponse = await $.ajax({
-          method: "get",
-          url: "http://88.187.112.10:3000/session/inputs",
-          xhrFields:{
-          withCredentials:true
-      }}).done(function(result){
-         
-          this.serverResponse = result
-        }).fail(function( jqXHR, textStatus ) {
-         console.log( "Request failed: " + jqXHR);
-        })
-        console.log("response:",serverResponse.input)
-        console.log("debut");
-        
-        for(let i=0; i<input.length;i++){
-          if (serverResponse.input === LEFT && !sharks[i].collisions.left) {
-            console.log("changes");
-            sharks[i].sy = 150;
-            sharks[i].dx -= moveSpeedX;
-          }
-    
-          if (serverResponse.input === UP && !collisions.up) {
-            console.log("changes");
-            sharks[i].dy -= moveSpeedY;
-          }
-    
-          if (serverResponse.input === RIGHT && !collisions.right ) {
-            console.log("changes");
-            sharks[i].sy = 0;
-            sharks[i].dx += moveSpeedX;
-          }
-    
-          if (serverResponse.input === DOWN && !collisions.down) {
-            console.log("changes");
-            sharks[i].dy += moveSpeedY;
-          }
-        }
-        
-        console.log("fin");
-    }
+   
 
     /* cette méthode ne concernen maintenant que l'affichage du requin*/
     this.renderShark = function () {
@@ -448,6 +404,53 @@ window.onload = function() {
       }
     };
   }
+  /*
+  * Méthode permettant la récupération de la direction via le serveur
+  * il est recommandé de séparer les actions et donc d'avoir 
+  * 
+  */
+  var serverInputs = async function (){  
+      var serverResponse = await $.ajax({
+        method: "get",
+        url: "http://88.187.112.10:3000/session/inputs",
+        xhrFields:{
+        withCredentials:true
+    }}).done(function(result){
+        console.log("result:",result)
+        console.log("length:",result.length)
+        return result
+      }).fail(function( jqXHR, textStatus ) {
+       console.log( "Request failed: " + jqXHR);
+      })
+      console.log("response:",serverResponse)
+      console.log("debut");
+      
+      for(let i=0; i < serverResponse.length;i++){
+        if (serverResponse[i].input === LEFT && !sharks[i].collisions.left) {
+          console.log("changes");
+          sharks[i].sy = 150;
+          sharks[i].dx -= moveSpeedX;
+        }
+  
+        if (serverResponse[i].input === UP && !sharks[i].collisions.up) {
+          console.log("changes");
+          sharks[i].dy -= moveSpeedY;
+        }
+  
+        if (serverResponse[i].input === RIGHT && !sharks[i].collisions.right ) {
+          console.log("changes");
+          sharks[i].sy = 0;
+          sharks[i].dx += moveSpeedX;
+        }
+  
+        if (serverResponse[i].input === DOWN && !sharks[i].collisions.down) {
+          console.log("changes");
+          sharks[i].dy += moveSpeedY;
+        }
+      }
+      
+      console.log("fin");
+  }
   
    
 
@@ -460,7 +463,7 @@ window.onload = function() {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
-    //this.serverInputs();
+    serverInputs();
     /*on récupère les données avant d'afficher les requins*/
     for(let i = 0; i<sharks.length; i++){
       sharks[i].renderShark();

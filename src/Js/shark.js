@@ -3,7 +3,7 @@
 
 window.onload = function() {
  
-  var shark =[]
+  var sharks =[]
   /* Variables
   */
 
@@ -214,26 +214,26 @@ window.onload = function() {
         console.log("debut");
         
         for(let i=0; i<input.length;i++){
-          if (serverResponse.input === LEFT && !shark[i].collisions.left) {
+          if (serverResponse.input === LEFT && !sharks[i].collisions.left) {
             console.log("changes");
-            shark[i].sy = 150;
-            shark[i].dx -= moveSpeedX;
+            sharks[i].sy = 150;
+            sharks[i].dx -= moveSpeedX;
           }
     
           if (serverResponse.input === UP && !collisions.up) {
             console.log("changes");
-            shark[i].dy -= moveSpeedY;
+            sharks[i].dy -= moveSpeedY;
           }
     
           if (serverResponse.input === RIGHT && !collisions.right ) {
             console.log("changes");
-            shark[i].sy = 0;
-            shark[i].dx += moveSpeedX;
+            sharks[i].sy = 0;
+            sharks[i].dx += moveSpeedX;
           }
     
           if (serverResponse.input === DOWN && !collisions.down) {
             console.log("changes");
-            shark[i].dy += moveSpeedY;
+            sharks[i].dy += moveSpeedY;
           }
         }
         
@@ -287,6 +287,39 @@ window.onload = function() {
   			this.width,
   			this.height
       );
+    };
+
+    /**
+    * Collisions
+    */
+    this.checkCollisions = function () {
+      this.collisions = {
+        right: false,
+        left: false
+      };
+      /* Collision bord gauche du canvas */
+      if (this.dx <= 10) {
+        this.collisions.left = true;
+        
+      };
+  
+      /* Collision surface de l'eau */
+      if (this.dy <= 245) {
+        this.collisions.up = true;
+        
+      };
+  
+      /* Collision bord droite du canvas */
+      if (this.dx >= canvas.width - 240) {
+        this.collisions.right = true;
+     
+      };
+  
+      /* Collision bord droite du canvas */
+      if (this.dy >= canvas.height - 150) {
+        this.collisions.down = true;
+        
+      };
     };
 
     /**
@@ -352,7 +385,7 @@ window.onload = function() {
     ticksPerFrame: 10
   });
 
-  shark.push(shark1);
+  sharks.push(shark1);
 
   var shark2 = new Sprite({
     context: context,
@@ -367,7 +400,7 @@ window.onload = function() {
 
   })
 
-  shark.push(shark2);
+  sharks.push(shark2);
 
 
 
@@ -388,58 +421,27 @@ window.onload = function() {
     };
   }, fishedPopSpeed);
 
-
-  /**
-  * Collisions
-  */
-  var checkCollisions = function () {
-    this.collisions = {
-      right: false,
-      left: false
-    };
-    /* Collision bord gauche du canvas */
-    if (this.dx <= 10) {
-      this.collisions.left = true;
-      
-    };
-
-    /* Collision surface de l'eau */
-    if (this.dy <= 245) {
-      this.collisions.up = true;
-      
-    };
-
-    /* Collision bord droite du canvas */
-    if (this.dx >= canvas.width - 240) {
-      this.collisions.right = true;
-   
-    };
-
-    /* Collision bord droite du canvas */
-    if (this.dy >= canvas.height - 150) {
-      this.collisions.down = true;
-      
-    };
-
+  var checkFishCollision= function(){
     /* Collision avec les poissons */
     for (var i = 0; i < fishes.length; i++) {
       var fish = fishes[i];
-      if (
-        this.dy <= fish.dy + 20 &&
-        this.dx <= fish.dx + 67 &&
-        this.dx + 237 >= fish.dx &&
-        this.dy + 120 >= fish.dy
-      ) {
-        fishes.splice(i, 1);
-        score += 1;
-        // Gestion de la fin de partie gagnée ici
-             
-        // compétences à afficher
-        
-        
-      };
+      for (let j=0; j < sharks.length; j++){
+        if (
+          sharks[j].dy <= fish.dy + 20 &&
+          sharks[j].dx <= fish.dx + 67 &&
+            sharks[j].dx + 237 >= fish.dx &&
+              sharks[j].dy + 120 >= fish.dy
+        ) {
+          fishes.splice(i, 1);
+          score += 1;
+          // Gestion de la fin de partie gagnée ici   
+          // compétences à afficher
+        };
+      }
     };
-  };
+  }
+  
+   
 
   /**
   * Exécution du jeu
@@ -450,15 +452,15 @@ window.onload = function() {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
-    this.serverInputs();
+    //this.serverInputs();
     /*on récupère les données avant d'afficher les requins*/
-    for(let i = 0; i<shark.length; i++){
-      shark[i].renderShark();
-      shark[i].updateShark();
-      shark[i].checkCollisions();
+    for(let i = 0; i<sharks.length; i++){
+      sharks[i].renderShark();
+      sharks[i].updateShark();
+      sharks[i].checkCollisions();
     }
   
-
+    checkFishCollision();
 
     for (var i = 0; i < fishes.length; i++) {
       var fish = fishes[i];

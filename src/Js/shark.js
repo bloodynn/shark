@@ -112,6 +112,9 @@ window.onload = function() {
         method: "POST",
         url: "http://88.187.112.10:3000/session/inputs",
         data: { "input" : keyCode },
+        xhrFields:{
+          withCredentials:true
+      }
       }).done(function(){
       }).fail(function( jqXHR, textStatus ) {
         console.log( "Request failed: " + jqXHR);
@@ -130,6 +133,9 @@ window.onload = function() {
       method: "POST",
       url: "http://88.187.112.10:3000/session/inputs",
       data: { "input" :null },
+      xhrFields:{
+        withCredentials:true
+    }
     }).done(function(){
     }).fail(function( jqXHR, textStatus ) {
       console.log( "Request failed: " + jqXHR);
@@ -204,7 +210,9 @@ window.onload = function() {
         var serverResponse = await $.ajax({
           method: "get",
           url: "http://88.187.112.10:3000/session/inputs",
-        }).done(function(result){
+          xhrFields:{
+          withCredentials:true
+      }}).done(function(result){
          
           this.serverResponse = result
         }).fail(function( jqXHR, textStatus ) {

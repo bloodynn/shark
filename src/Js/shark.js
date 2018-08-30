@@ -76,13 +76,15 @@ window.onload = function() {
   var fishes = [];
   var score = 0;
 
+  var fishRandom = 0;
+
 
   /**
   * Fonctions utilitaires
   */
   /* Générateur d'un nombre entier aléatoire */
   function random (min, max) {
-    return Math.random() * max + min;
+    return fishRandom * max + min;
   };
 
 
@@ -409,7 +411,7 @@ window.onload = function() {
   * il est recommandé de séparer les actions et donc d'avoir 
   * 
   */
-  var serverInputs = async function (){  
+  var serverdatas = async function (){  
       var serverResponse = await $.ajax({
         method: "get",
         url: "http://88.187.112.10:3000/session/inputs",
@@ -424,26 +426,28 @@ window.onload = function() {
       })
       console.log("response:",serverResponse)
       console.log("debut");
+
+      fishRandom = serverResponse.fishRandom;
       
-      for(let i=0; i < serverResponse.length;i++){
-        if (serverResponse[i].input === LEFT && !sharks[i].collisions.left) {
+      for(let i=0; i < serverResponse.inputs.length;i++){
+        if (serverResponse.inputs[i].input === LEFT && !sharks[i].collisions.left) {
           console.log("changes");
           sharks[i].sy = 150;
           sharks[i].dx -= moveSpeedX;
         }
   
-        if (serverResponse[i].input === UP && !sharks[i].collisions.up) {
+        if (serverResponse.inputs[i].input === UP && !sharks[i].collisions.up) {
           console.log("changes");
           sharks[i].dy -= moveSpeedY;
         }
   
-        if (serverResponse[i].input === RIGHT && !sharks[i].collisions.right ) {
+        if (serverResponse.inputs[i].input === RIGHT && !sharks[i].collisions.right ) {
           console.log("changes");
           sharks[i].sy = 0;
           sharks[i].dx += moveSpeedX;
         }
   
-        if (serverResponse[i].input === DOWN && !sharks[i].collisions.down) {
+        if (serverResponse.inputs[i].input === DOWN && !sharks[i].collisions.down) {
           console.log("changes");
           sharks[i].dy += moveSpeedY;
         }
@@ -463,7 +467,7 @@ window.onload = function() {
   (function gameRender() {
     window.requestAnimationFrame(gameRender);
     background.renderBackground();
-    serverInputs();
+    serverdatas();
     /*on récupère les données avant d'afficher les requins*/
     for(let i = 0; i<sharks.length; i++){
       sharks[i].renderShark();
